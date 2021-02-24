@@ -30,7 +30,7 @@ func (mda *MakeDirectoryAction) Do(baseDirectory string, dump io.Writer) error {
 		_, _ = fmt.Fprintln(dump, "Could not create the directory: "+full+" because: "+err.Error())
 		return err
 	} else {
-		_, _ = fmt.Fprintln(dump, "Created directory: "+full)
+		_, _ = fmt.Fprintln(dump, "Creating directory: "+full)
 		return doTree(full, mda.actions, dump)
 	}
 }
@@ -38,7 +38,7 @@ func (mda *MakeDirectoryAction) Do(baseDirectory string, dump io.Writer) error {
 // Removes the just created directory.
 func (mda *MakeDirectoryAction) Rollback(baseDirectory string, dump io.Writer) {
 	full := filepath.Join(baseDirectory, mda.directory)
-	_, _ = fmt.Fprintln(dump, "Removed directory: "+full)
+	_, _ = fmt.Fprintln(dump, "Removing directory: "+full)
 	_ = os.Remove(full)
 }
 
