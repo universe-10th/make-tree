@@ -11,8 +11,8 @@ import (
 // UseDirectoryAction creates the
 // target directory, but expects it
 // to exist, and runs the inner actions
-// inside. Conversely, it does not
-// remove the directory on rollback.
+// inside. It does remove the directory
+// on rollback.
 type MakeDirectoryAction struct {
 	directory string
 	actions   []Action
