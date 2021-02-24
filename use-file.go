@@ -45,7 +45,7 @@ func (ufa *UseFileAction) Do(baseDirectory string, dump io.Writer) error {
 // implementation for this type.
 func (ufa *UseFileAction) Rollback(baseDirectory string, dump io.Writer) {}
 
-// Instantiates a UseDirectoryAction.
+// Instantiates a UseFileAction.
 func UseFile(file string, action func(file *os.File) error) *UseFileAction {
 	return &UseFileAction{file: file, action: action}
 }
