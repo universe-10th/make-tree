@@ -27,3 +27,9 @@ func rollbackTree(baseDirectory string, actions []Action, dump io.Writer) {
 		actions[last-index].Rollback(baseDirectory, dump)
 	}
 }
+
+// MakeTree takes a list of actions and executes them one by one
+// but recursively on a given base directory.
+func MakeTree(baseDirectory string, actions []Action, dump io.Writer) error {
+	return doTree(baseDirectory, actions, dump)
+}
