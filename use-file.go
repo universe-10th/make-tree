@@ -16,6 +16,7 @@ import (
 type UseFileAction struct {
 	file   string
 	action func(file *os.File) error
+	append bool
 }
 
 // Do Ensures the specified file
@@ -31,7 +32,11 @@ func (ufa *UseFileAction) Do(baseDirectory string, dump io.Writer) error {
 		return errors.New("the path must not be a directory: " + full)
 	} else {
 		_, _ = fmt.Fprintln(dump, "Using file: "+full)
-		if file, err := os.OpenFile(full, os.O_RDWR, 0666); err != nil {
+		mode := os.O_RDWR
+		if ufa.append {
+			mode |= os.O_APPEND
+		}
+		if file, err := os.OpenFile(full, mode, 0666); err != nil {
 			_, _ = fmt.Fprintln(dump, "Could not open file for edition: "+full+" because: "+err.Error())
 			return err
 		} else {
@@ -46,6 +51,6 @@ func (ufa *UseFileAction) Do(baseDirectory string, dump io.Writer) error {
 func (ufa *UseFileAction) Rollback(baseDirectory string, dump io.Writer) {}
 
 // Instantiates a UseFileAction.
-func UseFile(file string, action func(file *os.File) error) *UseFileAction {
-	return &UseFileAction{file: file, action: action}
+func UseFile(file string, append bool, action func(file *os.File) error) *UseFileAction {
+	return &UseFileAction{file: file, append: append, action: action}
 }
