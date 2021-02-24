@@ -20,9 +20,10 @@ func doTree(baseDirectory string, actions []Action, dump io.Writer) error {
 
 // rollbackTree invokes all the given actions' Rollback methods to
 // implement the intended changes. On failure, it does nothing but
-// silently moves forward.
+// silently moves forward. The actions are executed in reverse order.
 func rollbackTree(baseDirectory string, actions []Action, dump io.Writer) {
-	for _, action := range actions {
-		action.Rollback(baseDirectory, dump)
+	last := len(actions) - 1
+	for index, _ := range actions {
+		actions[last-index].Rollback(baseDirectory, dump)
 	}
 }
