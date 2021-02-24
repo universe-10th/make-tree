@@ -2,6 +2,7 @@ package make_tree
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -23,10 +24,13 @@ type UseDirectoryAction struct {
 func (uda *UseDirectoryAction) Do(baseDirectory string, dump io.Writer) error {
 	full := filepath.Join(baseDirectory, uda.directory)
 	if info, err := os.Stat(full); err != nil {
+		_, _ = fmt.Fprintln(dump, "The directory does not exist: "+full)
 		return err
 	} else if !info.IsDir() {
+		_, _ = fmt.Fprintln(dump, "The path must be a directory: "+full)
 		return errors.New("the path must be a directory: " + full)
 	} else {
+		_, _ = fmt.Fprintln(dump, "Using directory: "+full)
 		return doTree(full, uda.actions, dump)
 	}
 }
