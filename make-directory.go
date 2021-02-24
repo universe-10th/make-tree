@@ -41,3 +41,8 @@ func (mda *MakeDirectoryAction) Rollback(baseDirectory string, dump io.Writer) {
 	_, _ = fmt.Fprintln(dump, "Removed directory: "+full)
 	_ = os.Remove(full)
 }
+
+// Instantiates a MakeDirectoryAction.
+func MakeDirectory(directory string, actions []Action) *MakeDirectoryAction {
+	return &MakeDirectoryAction{directory: directory, actions: actions}
+}
