@@ -7,7 +7,7 @@ import "io"
 type Action interface {
 	// Executes the direct action. It must
 	// return an error on failure.
-	Do(currentDirectory string, dump io.Writer, logRan func(Action)) error
+	Do(currentDirectory string, dump io.Writer, logRan func(string, Action)) error
 	// Executes the inverse action. It should
 	// not return error on failure, but silently
 	// forgive.

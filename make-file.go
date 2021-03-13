@@ -19,7 +19,7 @@ type MakeFileAction struct {
 // Do Ensures the specified file
 // exists as a file and then
 // executes the inner actions.
-func (mfa *MakeFileAction) Do(baseDirectory string, dump io.Writer, logRan func(Action)) error {
+func (mfa *MakeFileAction) Do(baseDirectory string, dump io.Writer, logRan func(string, Action)) error {
 	full := filepath.Join(baseDirectory, mfa.file)
 	if _, err := os.Stat(full); err == nil {
 		_, _ = fmt.Fprintln(dump, "The file already exists: "+full)
@@ -32,7 +32,7 @@ func (mfa *MakeFileAction) Do(baseDirectory string, dump io.Writer, logRan func(
 		} else {
 			defer func() {
 				file.Close()
-				logRan(mfa)
+				logRan(baseDirectory, mfa)
 			}()
 			return mfa.action(file)
 		}
