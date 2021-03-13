@@ -9,7 +9,7 @@ func doTree(baseDirectory string, actions []Action, dump io.Writer) error {
 	ran := []Action{}
 	for _, action := range actions {
 		if err := action.Do(baseDirectory, dump); err != nil {
-			rollbackTree(baseDirectory, actions, dump)
+			rollbackTree(baseDirectory, ran, dump)
 			return err
 		} else {
 			ran = append(ran, action)
