@@ -5,14 +5,10 @@ import "io"
 // doTree invokes all the given actions' Do methods to implement
 // the intended changes. On failure, it invoked rollbackTree to
 // undo everything.
-func doTree(baseDirectory string, actions []Action, dump io.Writer) error {
-	ran := []Action{}
+func doTree(baseDirectory string, actions []Action, dump io.Writer, logRan func(Action)) error {
 	for _, action := range actions {
-		if err := action.Do(baseDirectory, dump); err != nil {
-			rollbackTree(baseDirectory, ran, dump)
+		if err := action.Do(baseDirectory, dump, logRan); err != nil {
 			return err
-		} else {
-			ran = append(ran, action)
 		}
 	}
 	return nil
@@ -31,5 +27,16 @@ func rollbackTree(baseDirectory string, actions []Action, dump io.Writer) {
 // MakeTree takes a list of actions and executes them one by one
 // but recursively on a given base directory.
 func MakeTree(baseDirectory string, actions []Action, dump io.Writer) error {
-	return doTree(baseDirectory, actions, dump)
+	var ran []Action
+
+	logRan := func(action Action) {
+		ran = append(ran, action)
+	}
+
+	if err := doTree(baseDirectory, actions, dump, logRan); err != nil {
+		rollbackTree(baseDirectory, ran, dump)
+		return err
+	} else {
+		return nil
+	}
 }

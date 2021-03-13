@@ -19,8 +19,8 @@ type MakeFileAction struct {
 // Do Ensures the specified file
 // exists as a file and then
 // executes the inner actions.
-func (ufa *MakeFileAction) Do(baseDirectory string, dump io.Writer) error {
-	full := filepath.Join(baseDirectory, ufa.file)
+func (mfa *MakeFileAction) Do(baseDirectory string, dump io.Writer, logRan func(Action)) error {
+	full := filepath.Join(baseDirectory, mfa.file)
 	if _, err := os.Stat(full); err == nil {
 		_, _ = fmt.Fprintln(dump, "The file already exists: "+full)
 		return err
@@ -30,16 +30,19 @@ func (ufa *MakeFileAction) Do(baseDirectory string, dump io.Writer) error {
 			_, _ = fmt.Fprintln(dump, "Could not create: "+full+" because: "+err.Error())
 			return err
 		} else {
-			defer file.Close()
-			return ufa.action(file)
+			defer func() {
+				file.Close()
+				logRan(mfa)
+			}()
+			return mfa.action(file)
 		}
 	}
 }
 
 // Rollback does not have any particular
 // implementation for this type.
-func (ufa *MakeFileAction) Rollback(baseDirectory string, dump io.Writer) {
-	full := filepath.Join(baseDirectory, ufa.file)
+func (mfa *MakeFileAction) Rollback(baseDirectory string, dump io.Writer) {
+	full := filepath.Join(baseDirectory, mfa.file)
 	_, _ = fmt.Fprintln(dump, "Removing file: "+full)
 	_ = os.Remove(full)
 }

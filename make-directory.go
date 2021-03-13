@@ -22,7 +22,7 @@ type MakeDirectoryAction struct {
 // if it does not exist, or raises
 // an error. After that, it executes
 // all of its inner actions.
-func (mda *MakeDirectoryAction) Do(baseDirectory string, dump io.Writer) error {
+func (mda *MakeDirectoryAction) Do(baseDirectory string, dump io.Writer, logRan func(Action)) error {
 	full := filepath.Join(baseDirectory, mda.directory)
 	if _, err := os.Stat(full); err == nil {
 		_, _ = fmt.Fprintln(dump, "The path already exists: "+full)
@@ -32,7 +32,8 @@ func (mda *MakeDirectoryAction) Do(baseDirectory string, dump io.Writer) error {
 		return err
 	} else {
 		_, _ = fmt.Fprintln(dump, "Creating directory: "+full)
-		return doTree(full, mda.actions, dump)
+		logRan(mda)
+		return doTree(full, mda.actions, dump, logRan)
 	}
 }
 

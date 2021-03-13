@@ -22,7 +22,7 @@ type UseFileAction struct {
 // Do Ensures the specified file
 // exists as a file and then
 // executes the inner actions.
-func (ufa *UseFileAction) Do(baseDirectory string, dump io.Writer) error {
+func (ufa *UseFileAction) Do(baseDirectory string, dump io.Writer, logRan func(Action)) error {
 	full := filepath.Join(baseDirectory, ufa.file)
 	if info, err := os.Stat(full); err != nil {
 		_, _ = fmt.Fprintln(dump, "The file does not exist: "+full)
@@ -40,7 +40,10 @@ func (ufa *UseFileAction) Do(baseDirectory string, dump io.Writer) error {
 			_, _ = fmt.Fprintln(dump, "Could not open file for edition: "+full+" because: "+err.Error())
 			return err
 		} else {
-			defer file.Close()
+			defer func() {
+				file.Close()
+				logRan(ufa)
+			}()
 			return ufa.action(file)
 		}
 	}

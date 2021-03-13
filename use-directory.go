@@ -21,7 +21,7 @@ type UseDirectoryAction struct {
 // Do Ensures the specified directory
 // exists as a directory and then executes
 // the inner actions.
-func (uda *UseDirectoryAction) Do(baseDirectory string, dump io.Writer) error {
+func (uda *UseDirectoryAction) Do(baseDirectory string, dump io.Writer, logRan func(Action)) error {
 	full := filepath.Join(baseDirectory, uda.directory)
 	if info, err := os.Stat(full); err != nil {
 		_, _ = fmt.Fprintln(dump, "The directory does not exist: "+full)
@@ -31,7 +31,8 @@ func (uda *UseDirectoryAction) Do(baseDirectory string, dump io.Writer) error {
 		return errors.New("the path must be a directory: " + full)
 	} else {
 		_, _ = fmt.Fprintln(dump, "Using directory: "+full)
-		return doTree(full, uda.actions, dump)
+		logRan(uda)
+		return doTree(full, uda.actions, dump, logRan)
 	}
 }
 
