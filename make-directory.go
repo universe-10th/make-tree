@@ -25,6 +25,7 @@ type MakeDirectoryAction struct {
 func (mda *MakeDirectoryAction) Do(baseDirectory string, dump io.Writer) error {
 	full := filepath.Join(baseDirectory, mda.directory)
 	if _, err := os.Stat(full); err == nil {
+		_, _ = fmt.Fprintln(dump, "The path already exists: "+full)
 		return errors.New("the path already exists: " + full)
 	} else if err := os.Mkdir(full, 0755); err != nil {
 		_, _ = fmt.Fprintln(dump, "Could not create the directory: "+full+" because: "+err.Error())
